@@ -1,38 +1,61 @@
 import './employees-add-form.css';
-import { useState } from 'react';
+import { Component } from 'react';
 
-function EmployeesAddForm() {
-    const [name, setName] = useState('')
-    const [salary, setSalary] = useState('')
+class EmployeesAddForm extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            salary: ''
+        }
+    }
 
-    return (
-        <div className="app-add-form">
-            <h3>Добавьте нового сотрудника</h3>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault()
-                }}
-                className="add-form d-flex">
-                <input type="text"
-                    value={name}
-                    onChange={(e) => {
-                        setName(e.target.value)
-                    }}
-                    className="form-control new-post-label"
-                    placeholder="Как его зовут?" />
-                <input type="number"
-                    value={salary}
-                    onChange={(e) => {
-                        setSalary(e.target.value)
-                    }}
-                    className="form-control new-post-label"
-                    placeholder="З/П в $?" />
+    onValueChange = (e) => {
+        this.setState({
+            [e.target.name] : e.target.value
+        })
+    }
 
-                <button type="submit"
-                    className="btn btn-outline-light">Добавить</button>
-            </form>
-        </div>
-    )
+    onSubmit = (e) => {
+        e.preventDefault();
+        
+        if (this.state.name.length < 3 || !this.state.salary) return;
+        this.props.onAdd(this.state.name, this.state.salary);
+        this.setState({
+            name: '',
+            salary: ''
+        })
+    }
+
+    render() {
+        const {name, salary} = this.state;
+
+        return (
+            <div className="app-add-form">
+                <h3>Добавьте нового сотрудника</h3>
+                <form
+                    className="add-form d-flex"
+                    onSubmit = {this.onSubmit}>
+                    <input type="text"
+                        className="form-control new-post-label"
+                        placeholder="Как его зовут?"
+                        name="name"
+                        value={name} 
+                        onChange={this.onValueChange}/>
+                    <input type="number"
+                        className="form-control new-post-label"
+                        placeholder="З/П в $?"
+                        name="salary"
+                        value={salary} 
+                        onChange={this.onValueChange}/>
+    
+                    <button type="submit"
+                            className="btn btn-outline-light">Добавить</button>
+                </form>
+            </div>
+        )
+    }
 }
+
 
 export default EmployeesAddForm;
