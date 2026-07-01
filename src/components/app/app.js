@@ -1,3 +1,5 @@
+import { Component } from "react";
+
 import AppInfo from "../app-info/app-info";
 import SearchPanel from "../search-panel/search-panel";
 import AppFilter from "../app-filter/app-filter";
@@ -6,26 +8,93 @@ import EmployeesAddForm from "../employees-add-form/employees-add-form";
 
 import "./app.css";
 
-function App() {
-  const data = [
-    { name: "KASIM", salary: 1000000, increase: true },
-    { name: "TORE", salary: 200000, increase: false },
-    { name: "HAMZA", salary: 10000000, increase: false },
-  ];
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [
+        { name: "KASIM", salary: 1000000, increase: true, like: true, id: 1 },
+        { name: "TORE", salary: 200000, increase: false, like: false, id: 2 },
+        {
+          name: "HAMZA",
+          salary: 10000000,
+          increase: false,
+          like: false,
+          id: 3,
+        },
+      ],
+    };
+    this.maxId = 4;
+  }
 
-  return (
-    <div className="app">
-      <AppInfo />
+  deleteItem = (id) => {
+    this.setState(({ data }) => {
+      return {
+        data: data.filter((item) => item.id !== id),
+      };
+    });
+  };
 
-      <div className="search-panel">
-        <SearchPanel />
-        <AppFilter />
+  onToggleIncrease = (id) => {
+    this.setState(({ data }) => ({
+      data: data.map((item) => {
+        if (item.id === id) {
+          return { ...item, increase: !item.increase };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onToggleLike = (id) => {
+    this.setState(({ data }) => {
+      return {
+        data: data.map((item) => {
+          if (item.id === id) {
+            return { ...item, like: !item.like };
+          }
+          return item;
+        }),
+      };
+    });
+  };
+
+  addItem = (name, salary) => {
+    const newItem = {
+      name,
+      salary,
+      increase: false,
+      like: false,
+      id: this.maxId++,
+    };
+    this.setState(({ data }) => {
+      const newArr = [...data, newItem];
+      return {
+        data: newArr,
+      };
+    });
+  };
+
+  render() {
+    return (
+      <div className="app">
+        <AppInfo data={this.state.data} />
+
+        <div className="search-panel">
+          <SearchPanel />
+          <AppFilter />
+        </div>
+
+        <EmployeesList
+          data={this.state.data}
+          onDelete={this.deleteItem}
+          onToggleIncrease={this.onToggleIncrease}
+          onToggleLike={this.onToggleLike}
+        />
+        <EmployeesAddForm onAdd={this.addItem} />
       </div>
-
-      <EmployeesList data={data} />
-      <EmployeesAddForm />
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
